@@ -139,4 +139,4 @@ function delete_link($link_id)
     return $delete;
 }
 // $link_id = $id;
-delete_link($link_id);
+// delete_link($link_id);
