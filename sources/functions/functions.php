@@ -5,7 +5,7 @@
 define('HOST', 'localhost');
 define('USER', 'root');
 define('DBNAME', 'links_manager_dev');
-define('PASSWORD', ''); // windows (Mamp le mot de passe c'est 'root')
+define('PASSWORD', 'root'); // windows (Mamp le mot de passe c'est 'root')
 
 /**
  * Fonction de connexion à la base de données
@@ -38,9 +38,22 @@ function db_connect(): PDO
  */
 function get_all_link()
 {
-    // TODO implement function
-}
+    $db = db_connect();
 
+    $sql = <<<EOD
+    SELECT
+        *
+    FROM
+        `links`
+    EOD;
+    // $sql = "SELECT * FROM `links`";
+    $linksStmt = $db->query($sql);
+    $linksStmt->execute();
+    $links = $linksStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    return $links;
+}
+// var_dump(get_all_link());
 
 /**
  * Fonction qui permet de récupérer un enregistrement à partir de son identifiant dans la table des liens
@@ -49,8 +62,23 @@ function get_all_link()
  */
 function get_link_by_id($link_id)
 {
-    // TODO implement function
+    $db = db_connect();
+
+    $sql = <<<EOD
+    SELECT
+        *
+    FROM
+        `links`
+    WHERE link_id = $link_id
+    EOD;
+    // $sql = "SELECT * FROM `links`";
+    $linksIdStmt = $db->query($sql);
+    $linksIdStmt->execute();
+    $linksId = $linksIdStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    return $linksId;
 }
+// var_dump(get_link_by_id(3));
 
 
 /**
@@ -64,15 +92,31 @@ function update_link($data)
 }
 
 
+// fonction qui verifi si les champs sont bien defini et pas vide
+function get_verify(){
+    return(isset($_POST['title']) and !empty($_POST['title']) and isset($_POST['url']) and !empty($_POST['url']));
+}
+
 /**
  * Fonction qui permet de d'enregistrer un nouveau lien dans la table des liens
  * @param array $data: ['title' => 'MDN', 'url' => 'https://developer.mozilla.org/fr/']
  * @return bool
  */
+$data = [];
 function create_link($data)
 {
-    // TODO implement function
+    if(get_verify()){
+        $db = db_connect();
+        $title = $_POST['title'];
+        $url = $_POST['url'];
+
+        $data = "INSERT INTO links (title, url) VALUES ('$title', '$url')";
+        $db->exec($data);
+        echo "bon";
+        header('Location: http://localhost:8888/souabe_raphael_eval_php/sources/');
+    }
 }
+create_link($data);
 
 /**
  * Fonction qui permet de supprimer l'enregistrement dont l'identifiant est $linl_id dans la table des liens
@@ -81,5 +125,18 @@ function create_link($data)
  */
 function delete_link($link_id)
 {
-    // TODO implement function
+    $db = db_connect();
+
+    $sql = <<<EOD
+    DELETE FROM `links`
+
+    WHERE `link_id` = $link_id
+    EOD;
+    $deleteStmt = $db->query($sql);
+    $deleteStmt->execute();
+    $delete = $deleteStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    return $delete;
 }
+// $link_id = $id;
+delete_link($link_id);
